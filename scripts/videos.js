@@ -8,6 +8,13 @@ function getTimeString(time){
     remainingSecond = remainingSecond % 60;
    return `${hour}hour ${minute}minute ${remainingSecond}second ago`;
 }
+const removeActiveClass = () => {
+    const buttons = document.getElementsByClassName("category-btn");
+     console.log(buttons);
+     for(let btn of buttons){
+        btn.classList.remove("active");
+    }
+}
 
 // ftech, show and load catagories in html//
 
@@ -26,9 +33,40 @@ const loadVideos = () =>{
     .catch((error) => console.log(error));
 }
 
+// load category video
+
+const loadCategoryVideos = (id) => {
+    fetch(`https://openapi.programming-hero.com/api/phero-tube/category/${id}`)
+    .then((res) => res.json())
+    .then((data) => {
+        // sobaike active class remove korao
+        removeActiveClass();
+        // id er class ka active koraw
+        const activeBtn = document.getElementById(`btn-${id}`);
+        activeBtn.classList.add("active");
+        displayVideos(data.category);
+    })
+    .catch((error) => console.log(error));
+};
+
 //create display videos
 const displayVideos = (videos) => {
     const videoContainer = document.getElementById("videos");
+    videoContainer.innerHTML = "";
+    if (videos.length == 0){
+        videoContainer.classList.remove("grid");
+           videoContainer.innerHTML = `
+           <div class ="min-h-[600px] flex flex-col gap-5 justify-center items-center">
+               <img src="assets/icon.png" />
+               <h2 class="text-center text-xl font-bold">
+               NO CONTENT HERE IN THIS CATEGORY
+               </h2>
+           </div>
+           `;
+           return;
+    } else {
+         videoContainer.classList.add("grid");
+    }
 videos.forEach(video => {
 console.log(video);
 const card = document.createElement("div");
@@ -64,7 +102,7 @@ videoContainer.append(card);
 }
 
 
-//create display catagories
+//create display categories
 const displayCategories = (categories) => {
 
 const categoryContainer = document.getElementById("categories");
@@ -72,11 +110,14 @@ const categoryContainer = document.getElementById("categories");
     categories.forEach((item) => {
         console.log(item);
 
-        const button= document.createElement("button");
-        button.classList = "btn";
-        button.innerText = item.category;
+        const buttonContainer = document.createElement("div");
+           buttonContainer.innerHTML =
+           `<button id= "btn-${item.category_id}" onclick = "loadCategoryVideos(${item.category_id})" class = "btn">
+           ${item.category}
+           </button>
+           `;
 
-        categoryContainer.append(button);
+        categoryContainer.append(buttonContainer);
     })
 }
 
