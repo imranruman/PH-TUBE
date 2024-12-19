@@ -16,6 +16,27 @@ const removeActiveClass = () => {
     }
 }
 
+const loadDetails = async (videoId) => {
+console.log(videoId);
+const uri = `https://openapi.programming-hero.com/api/phero-tube/video/${videoId}`;
+const res = await fetch(uri);
+const data = await res.json();
+displayDetails(data.video);
+}
+
+const displayDetails = (video) =>{
+    console.log(video);
+
+    const detailContainer = document.getElementById("modal-content");
+
+    // document.getElementById("showModalData").click();
+    document.getElementById("customModal").showModal();
+    detailContainer.innerHTML = `
+    <img src=${video.thumbnail} />
+    <p>${video.description}</p>
+    `
+};
+
 // ftech, show and load catagories in html//
 
 //create load catagories
@@ -93,9 +114,10 @@ card.innerHTML =
 
 ${video.authors[0].verified == true ? `<img class= "w-5" src = https://img.icons8.com/?size=48&id=D9RtvkuOe31p&format=png />` : ""}
 </div>
+<p><button onClick="loadDetails('${video.video_id}')"  class= "btn btn-sm btn-error">Details</button></p>
+</div>
 </div>
 
-</div>
 `
 videoContainer.append(card);
 })
@@ -116,6 +138,8 @@ const categoryContainer = document.getElementById("categories");
            ${item.category}
            </button>
            `;
+
+
 
         categoryContainer.append(buttonContainer);
     })
